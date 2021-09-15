@@ -3,7 +3,7 @@ import { SignUpDto } from './dtos'
 import { scrypt, createCipheriv } from 'crypto'
 import { promisify } from 'util'
 import { Connection } from 'typeorm'
-import { User } from 'src/entities'
+import { User } from 'src/entity'
 
 @Injectable()
 export class AuthService {
@@ -24,11 +24,16 @@ export class AuthService {
 
   async signUp(dto: SignUpDto): Promise<Partial<User>> {
     const manager = this.connection.manager
+    const existingUser = await manager.findOne(User, { email: dto.email })
+
+    if (existingUser) {
+      throw new BadRequestException('User already existed')
+    }
 
     const encryptedPassword = await this.cipherPassword(dto.password)
 
     const userDto: Partial<User> = {
-      email: dto.email,
+      email: dto.email.trim().toLowerCase(),
       password: encryptedPassword,
     }
 
