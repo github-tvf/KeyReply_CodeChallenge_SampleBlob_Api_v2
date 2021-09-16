@@ -9,7 +9,7 @@ export class BlogService {
   async getAllBlogs(take: number, page: number): Promise<BlogDetails[]> {
     const manager = this.connection.manager
 
-    const blogs = await manager.find(Blog, { take, skip: take * (page - 1) })
+    const blogs = await manager.find(Blog, { take, skip: take * (page - 1), relations: ['user'] })
     const blogDetais = blogs.map((blog) => {
       return {
         id: blog.id,
