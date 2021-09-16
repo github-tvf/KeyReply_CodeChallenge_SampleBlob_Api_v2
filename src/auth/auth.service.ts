@@ -8,7 +8,7 @@ import { CipherService } from './ciphers/cipher.service'
 export class AuthService {
   constructor(private connection: Connection, private cipherService: CipherService) {}
 
-  async signUp(dto: SignUpDto): Promise<any> {
+  async signUp(dto: SignUpDto): Promise<Partial<User>> {
     const manager = this.connection.manager
     const existingUser = await manager.findOne(User, { email: dto.email })
 
@@ -22,13 +22,12 @@ export class AuthService {
     }
 
     const userEntity = await manager.save(User, userDto)
-    const { password, email, ...rest } = await manager.findOne(User, { id: userEntity.id })
+    const { password, ...rest } = await manager.findOne(User, { id: userEntity.id })
 
-    const base64encodedData = Buffer.from(email + ':' + password).toString('base64')
-    return { ...rest, token: base64encodedData }
+    return { ...rest }
   }
 
-  async signIn(dto: SignUpDto): Promise<Partial<User>> {
+  async signIn(dto: SignUpDto): Promise<any> {
     const manager = this.connection.manager
     const encryptedPassword = await this.cipherService.cipher(dto.password)
 
@@ -38,8 +37,9 @@ export class AuthService {
       throw new BadRequestException('Your account does not exist')
     }
 
-    const { password, ...rest } = userEntity
+    const { password, email, ...rest } = userEntity
+    const base64encodedData = Buffer.from(email + ':' + password).toString('base64')
 
-    return rest
+    return { ...rest, token: base64encodedData }
   }
 }
