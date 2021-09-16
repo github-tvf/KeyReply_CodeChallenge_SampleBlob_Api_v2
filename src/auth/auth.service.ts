@@ -1,28 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { SignUpDto } from './dtos'
-import { scrypt, createCipheriv } from 'crypto'
-import { promisify } from 'util'
 import { Connection } from 'typeorm'
 import { User } from 'src/entity'
+import { CipherService } from './ciphers/cipher.service'
 
 @Injectable()
 export class AuthService {
-  constructor(private connection: Connection) {}
-  private async cipherPassword(password: string): Promise<string> {
-    const iv = Buffer.from('VIETNAM-TECHVIFY')
-    const salt = '$@$tNRnC5qdHZXBO$$*4'
-    const keyLength = 32
+  constructor(private connection: Connection, private cipherService: CipherService) {}
 
-    const key = (await promisify(scrypt)(password, salt, keyLength)) as Buffer
-    const cipher = createCipheriv('aes-256-gcm', key, iv)
-
-    const secret = 'TECHVIFY'
-    const encryptedPassword = Buffer.concat([cipher.update(secret), cipher.final()]).toString('hex')
-
-    return encryptedPassword
-  }
-
-  async signUp(dto: SignUpDto): Promise<Partial<User>> {
+  async signUp(dto: SignUpDto): Promise<any> {
     const manager = this.connection.manager
     const existingUser = await manager.findOne(User, { email: dto.email })
 
@@ -30,23 +16,21 @@ export class AuthService {
       throw new BadRequestException('User already existed')
     }
 
-    const encryptedPassword = await this.cipherPassword(dto.password)
-
     const userDto: Partial<User> = {
       email: dto.email.trim().toLowerCase(),
-      password: encryptedPassword,
+      password: await this.cipherService.cipher(dto.password),
     }
 
     const userEntity = await manager.save(User, userDto)
+    const { password, email, ...rest } = await manager.findOne(User, { id: userEntity.id })
 
-    const { password, ...rest } = await manager.findOne(User, { id: userEntity.id })
-    return rest
+    const base64encodedData = Buffer.from(email + ':' + password).toString('base64')
+    return { ...rest, token: base64encodedData }
   }
 
   async signIn(dto: SignUpDto): Promise<Partial<User>> {
     const manager = this.connection.manager
-
-    const encryptedPassword = await this.cipherPassword(dto.password)
+    const encryptedPassword = await this.cipherService.cipher(dto.password)
 
     const userEntity = await manager.findOne(User, { email: dto.email, password: encryptedPassword })
 

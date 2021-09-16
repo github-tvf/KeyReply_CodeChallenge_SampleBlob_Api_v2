@@ -1,12 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Post, UseGuards } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Connection } from 'typeorm'
 import { AuthService } from './auth.service'
 import { SignUpDto } from './dtos'
+import { AuthGuard } from './guards'
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService, private configService: ConfigService) {}
+  constructor(private authService: AuthService) {}
 
   @Post('sign-up')
   async signUp(@Body() signUpDto: SignUpDto) {
@@ -14,6 +14,7 @@ export class AuthController {
   }
 
   @Post('sign-in')
+  @UseGuards(AuthGuard)
   async signIn(@Body() signInpDto: SignUpDto) {
     return this.authService.signIn(signInpDto)
   }
