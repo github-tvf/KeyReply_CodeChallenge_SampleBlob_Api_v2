@@ -11,7 +11,6 @@ export class CipherService {
     const cipher = createCipheriv('aes-256-gcm', key, iv)
     let encryptedData = cipher.update(password, 'utf-8', 'hex')
     encryptedData += cipher.final('hex')
-    console.log(encryptedData)
     return encryptedData
   }
 
@@ -19,7 +18,6 @@ export class CipherService {
     const decipher = createCipheriv('aes-256-gcm', key, iv)
     let decryptedData = decipher.update(encryptedPassword, 'hex', 'utf-8')
     decryptedData += decipher.final('utf8')
-    console.log('Decrypted message: ' + decryptedData)
     return decryptedData
   }
 }
