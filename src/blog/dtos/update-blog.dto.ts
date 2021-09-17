@@ -8,4 +8,8 @@ export class BlogDto {
   @IsOptional()
   @IsString()
   public content: string
+
+  @IsOptional()
+  @IsString()
+  public category: string
 }

@@ -9,12 +9,13 @@ import {
   Patch,
   Post,
   Query,
-  Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { Response } from 'express'
 import { diskStorage } from 'multer'
 import { AuthGuard } from 'src/auth/guards'
 import { CurrentUser } from 'src/decorators/current-user.decorator'
@@ -67,6 +68,9 @@ export class BlogController {
     FileInterceptor('file', {
       storage: diskStorage({
         destination: './upload',
+        filename: function (req, file, callback) {
+          callback(null, Date.now() + '-' + file.originalname)
+        },
       }),
     }),
   )
@@ -76,5 +80,15 @@ export class BlogController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     await this.blogService.uploadFile(blogId, user, file)
+  }
+
+  @Get(':id/image')
+  @UseGuards(AuthGuard)
+  async getBlogImage(
+    @Param('id', ParseUUIDPipe) blogId: string,
+    @CurrentUser() user: User,
+    @Res() res: Response,
+  ): Promise<void> {
+    return this.blogService.getBlogImage(blogId, user, res)
   }
 }

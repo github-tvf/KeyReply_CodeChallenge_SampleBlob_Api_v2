@@ -2,6 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { Blog, User } from 'src/entity'
 import { Connection } from 'typeorm'
 import { BlogDetails, BlogDto } from './dtos'
+import * as fs from 'fs'
+import { Response } from 'express'
 
 @Injectable()
 export class BlogService {
@@ -25,16 +27,12 @@ export class BlogService {
 
   async createBlog(creatDto: BlogDto, user: User): Promise<Blog> {
     const manager = this.connection.manager
-    const userEntity = await manager.findOne(User, { id: user.id })
-
-    if (!userEntity) {
-      throw new BadRequestException('Your account does not exist')
-    }
 
     const payload = new Blog()
     payload.title = creatDto.title
     payload.content = creatDto.content
-    payload.user = userEntity
+    payload.category = creatDto.category || ''
+    payload.user = user
 
     const blogEntity = await manager.save(Blog, payload)
     delete blogEntity.user
@@ -79,6 +77,13 @@ export class BlogService {
       throw new BadRequestException('The blog is not belongs to the user')
     }
 
+    const blogEntity = await manager.findOne(Blog, { id: blogId })
+    const { blobName, originalName } = blogEntity
+
+    if (originalName) {
+      fs.rmSync(`./upload/${blobName}`)
+    }
+
     await manager.update(Blog, { id: blogId }, { blobName: filename, originalName: originalname, mimeType: mimetype })
   }
 
@@ -93,5 +98,16 @@ export class BlogService {
 
   generateImageUrl(blobName: string): string {
     return `./upload/${blobName}`
+  }
+
+  async getBlogImage(blogId: string, user: User, res: Response): Promise<void> {
+    const validUserBlogs = await this.isBlogBelongsToUser(blogId, user.id)
+
+    if (!validUserBlogs) {
+      throw new BadRequestException('The blog is not belongs to the user')
+    }
+
+    const path = `./upload/${validUserBlogs.blobName}`
+    res.download(path)
   }
 }

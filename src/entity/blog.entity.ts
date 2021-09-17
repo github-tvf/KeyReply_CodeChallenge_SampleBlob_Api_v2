@@ -13,6 +13,10 @@ export class Blog extends BaseColumns {
   @IsString()
   public content: string
 
+  @Column()
+  @IsString()
+  public category: string
+
   @Column({ nullable: true })
   @IsString()
   public blobName: string
