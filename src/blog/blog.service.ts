@@ -98,6 +98,14 @@ export class BlogService {
   async getBlogImage(blogId: string, res: Response): Promise<void> {
     const validBlog = await this.connection.manager.findOne(Blog, { id: blogId })
 
+    if (!validBlog) {
+      throw new BadRequestException('Blog does not exist')
+    }
+
+    if (!validBlog.blobName) {
+      throw new BadRequestException('No image found')
+    }
+
     const path = `./upload/${validBlog.blobName}`
     res.download(path)
   }
