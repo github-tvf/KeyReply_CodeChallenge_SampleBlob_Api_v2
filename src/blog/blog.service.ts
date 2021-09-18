@@ -18,7 +18,6 @@ export class BlogService {
         title: blog.title,
         content: blog.content,
         author: blog.user.email,
-        imageUrl: this.generateImageUrl(blog.blobName),
       }
     })
 
@@ -94,10 +93,6 @@ export class BlogService {
       .where('blog.id = :blogId', { blogId })
       .andWhere('user.id = :userId', { userId })
       .getOne()
-  }
-
-  generateImageUrl(blobName: string): string {
-    return `./upload/${blobName}`
   }
 
   async getBlogImage(blogId: string, user: User, res: Response): Promise<void> {
