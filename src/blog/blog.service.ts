@@ -95,14 +95,10 @@ export class BlogService {
       .getOne()
   }
 
-  async getBlogImage(blogId: string, user: User, res: Response): Promise<void> {
-    const validUserBlogs = await this.isBlogBelongsToUser(blogId, user.id)
+  async getBlogImage(blogId: string, res: Response): Promise<void> {
+    const validBlog = await this.connection.manager.findOne(Blog, { id: blogId })
 
-    if (!validUserBlogs) {
-      throw new BadRequestException('The blog is not belongs to the user')
-    }
-
-    const path = `./upload/${validUserBlogs.blobName}`
+    const path = `./upload/${validBlog.blobName}`
     res.download(path)
   }
 }

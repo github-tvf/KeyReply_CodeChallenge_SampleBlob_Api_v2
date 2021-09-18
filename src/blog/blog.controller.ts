@@ -83,12 +83,7 @@ export class BlogController {
   }
 
   @Get(':id/image')
-  @UseGuards(AuthGuard)
-  async getBlogImage(
-    @Param('id', ParseUUIDPipe) blogId: string,
-    @CurrentUser() user: User,
-    @Res() res: Response,
-  ): Promise<void> {
-    return this.blogService.getBlogImage(blogId, user, res)
+  async getBlogImage(@Param('id', ParseUUIDPipe) blogId: string, @Res() res: Response): Promise<void> {
+    return this.blogService.getBlogImage(blogId, res)
   }
 }
