@@ -78,8 +78,8 @@ export class BlogController {
     @Param('id', ParseUUIDPipe) blogId: string,
     @CurrentUser() user: User,
     @UploadedFile() file: Express.Multer.File,
-  ) {
-    await this.blogService.uploadFile(blogId, user, file)
+  ): Promise<Blog> {
+    return this.blogService.uploadFile(blogId, user, file)
   }
 
   @Get(':id/image')

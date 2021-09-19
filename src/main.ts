@@ -17,7 +17,7 @@ async function bootstrap() {
     helmet({
       contentSecurityPolicy: {
         directives: {
-          'content-src': ["'self'", 'https:', 'data:'],
+          'connect-src': ["'self'", 'https:', 'data:'],
           'default-src': ["'self'"],
           'base-uri': ["'self'"],
           'block-all-mixed-content': [],

@@ -17,6 +17,7 @@ export class BlogService {
         id: blog.id,
         title: blog.title,
         content: blog.content,
+        blobName: blog.blobName,
         author: blog.user.email,
       }
     })
@@ -24,13 +25,17 @@ export class BlogService {
     return blogDetais
   }
 
-  async createBlog(creatDto: BlogDto, user: User): Promise<Blog> {
+  async createBlog(createDto: BlogDto, user: User): Promise<Blog> {
     const manager = this.connection.manager
 
+    if (!createDto.title || !createDto.content || !createDto.category) {
+      throw new BadRequestException('Please fulfill all fields of blog to continue')
+    }
+
     const payload = new Blog()
-    payload.title = creatDto.title
-    payload.content = creatDto.content
-    payload.category = creatDto.category || ''
+    payload.title = createDto.title
+    payload.content = createDto.content
+    payload.category = createDto.category || ''
     payload.user = user
 
     const blogEntity = await manager.save(Blog, payload)
@@ -66,7 +71,7 @@ export class BlogService {
     return true
   }
 
-  async uploadFile(blogId: string, user: User, file: Express.Multer.File): Promise<any> {
+  async uploadFile(blogId: string, user: User, file: Express.Multer.File): Promise<Blog> {
     const manager = this.connection.manager
     const { originalname, filename, mimetype } = file
 
@@ -84,6 +89,7 @@ export class BlogService {
     }
 
     await manager.update(Blog, { id: blogId }, { blobName: filename, originalName: originalname, mimeType: mimetype })
+    return manager.findOne(Blog, { id: blogId })
   }
 
   async isBlogBelongsToUser(blogId: string, userId: string): Promise<Blog | undefined> {

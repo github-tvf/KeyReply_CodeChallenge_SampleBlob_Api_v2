@@ -38,8 +38,11 @@ export class AuthService {
     }
 
     const { password, email, ...rest } = userEntity
-    const base64encodedData = Buffer.from(email + ':' + password).toString('base64')
+    const base64encodedData = Buffer.from(dto.email + ':' + dto.password).toString('base64')
 
-    return { ...rest, token: base64encodedData }
+    const lastActivity = new Date(Date.now())
+    await manager.update(User, { id: userEntity.id }, { lastActivity })
+
+    return { ...rest, lastActivity, token: base64encodedData }
   }
 }
