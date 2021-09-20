@@ -5,4 +5,5 @@ export class BlogDetails {
   public category: string
   public thumbnail: string
   public author: string
+  public createdAt: Date
 }

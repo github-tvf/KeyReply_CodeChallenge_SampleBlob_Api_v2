@@ -21,6 +21,7 @@ export class BlogService {
         blobName: blog.blobName,
         thumbnail: blog.thumbnail,
         author: blog.user.email,
+        createdAt: blog.createdAt,
       }
     })
 
