@@ -37,7 +37,7 @@ export class AuthService {
       throw new BadRequestException('Your account does not exist')
     }
 
-    const { password, email, ...rest } = userEntity
+    const { password, ...rest } = userEntity
     const base64encodedData = Buffer.from(dto.email + ':' + dto.password).toString('base64')
 
     const lastActivity = new Date(Date.now())

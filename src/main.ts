@@ -2,14 +2,14 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { ConfigService } from '@nestjs/config'
 import * as express from 'express'
-import * as helmet from 'helmet'
 import * as compression from 'compression'
 import * as morgan from 'morgan'
 import * as fs from 'fs'
 import { ValidationPipe } from '@nestjs/common'
+import { NestExpressApplication } from '@nestjs/platform-express'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
   const configService = app.get(ConfigService)
 
@@ -23,6 +23,8 @@ async function bootstrap() {
   process.on('uncaughtException', (err) => {
     console.log(err)
   })
+
+  app.disable('x-powered-by')
 
   app.useGlobalPipes(new ValidationPipe())
 
