@@ -17,6 +17,7 @@ export class BlogService {
         id: blog.id,
         title: blog.title,
         content: blog.content,
+        category: blog.category,
         blobName: blog.blobName,
         thumbnail: blog.thumbnail,
         author: blog.user.email,
