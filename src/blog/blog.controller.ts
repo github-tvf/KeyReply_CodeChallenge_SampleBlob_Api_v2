@@ -81,9 +81,4 @@ export class BlogController {
   ): Promise<Blog> {
     return this.blogService.uploadFile(blogId, user, file)
   }
-
-  @Get(':id/image')
-  async getBlogImage(@Param('id', ParseUUIDPipe) blogId: string, @Res() res: Response): Promise<void> {
-    return this.blogService.getBlogImage(blogId, res)
-  }
 }

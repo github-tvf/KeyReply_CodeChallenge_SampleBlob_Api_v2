@@ -5,6 +5,7 @@ import * as express from 'express'
 import * as compression from 'compression'
 import * as morgan from 'morgan'
 import * as fs from 'fs'
+import * as path from 'path'
 import { ValidationPipe } from '@nestjs/common'
 import { NestExpressApplication } from '@nestjs/platform-express'
 
@@ -27,6 +28,7 @@ async function bootstrap() {
   app.disable('x-powered-by')
 
   app.useGlobalPipes(new ValidationPipe())
+  app.use('/upload', express.static(path.join(`${__dirname}/../upload`)))
 
   await app.listen(configService.get<number>('PORT'))
 }
