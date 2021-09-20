@@ -13,27 +13,6 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService)
 
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          'connect-src': ["'self'", 'https:', 'data:'],
-          'default-src': ["'self'"],
-          'base-uri': ["'self'"],
-          'block-all-mixed-content': [],
-          'font-src': ["'self'", 'https:', 'data:'],
-          'img-src': ["'self'", 'data:'],
-          'object-src': ["'none'"],
-          'script-src': ["'self'"],
-          'script-src-attr': ["'none'"],
-          'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-          'upgrade-insecure-requests': [],
-          'frame-ancestors': ["'self'", configService.get<string>('FE_DOMAIN', '')],
-        },
-      },
-    }),
-  )
-
   app.enableCors()
   app.use(morgan('combined', { stream: fs.createWriteStream('server.log', { flags: 'a' }) }))
   app.use(morgan('dev'))
