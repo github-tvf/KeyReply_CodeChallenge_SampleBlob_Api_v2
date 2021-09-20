@@ -23,6 +23,10 @@ export class Blog extends BaseColumns {
 
   @Column({ nullable: true })
   @IsString()
+  public thumbnail: string
+
+  @Column({ nullable: true })
+  @IsString()
   public originalName: string
 
   @Column({ nullable: true })

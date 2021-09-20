@@ -18,6 +18,7 @@ export class BlogService {
         title: blog.title,
         content: blog.content,
         blobName: blog.blobName,
+        thumbnail: blog.thumbnail,
         author: blog.user.email,
       }
     })
@@ -36,6 +37,7 @@ export class BlogService {
     payload.title = createDto.title
     payload.content = createDto.content
     payload.category = createDto.category || ''
+    payload.thumbnail = createDto.thumbnail || ''
     payload.user = user
 
     const blogEntity = await manager.save(Blog, payload)

@@ -12,4 +12,8 @@ export class BlogDto {
   @IsOptional()
   @IsString()
   public category: string
+
+  @IsOptional()
+  @IsString()
+  public thumbnail: string
 }
