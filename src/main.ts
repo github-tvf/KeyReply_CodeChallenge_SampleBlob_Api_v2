@@ -34,6 +34,7 @@ async function bootstrap() {
     }),
   )
 
+  app.enableCors()
   app.use(morgan('combined', { stream: fs.createWriteStream('server.log', { flags: 'a' }) }))
   app.use(morgan('dev'))
   app.use(express.json({ limit: '50mb' }))
